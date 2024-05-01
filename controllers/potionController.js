@@ -11,7 +11,17 @@ exports.potion_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.potion_detail = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion details");
+  const potion = await Potion.findById(req.params.id)
+    .populate("category")
+    .exec();
+
+  if (potion === null) {
+    const err = new Error("Potion not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("potion_detail", { title: potion.name, potion: potion });
 });
 
 exports.potion_create_get = asyncHandler(async (req, res, next) => {

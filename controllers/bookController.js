@@ -8,10 +8,12 @@ exports.book_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.book_detail = asyncHandler(async (req, res, next) => {
-  const book = await Book.findById(req.params.id).populate("genre").exec();
+  const book = await Book.findById(req.params.id).populate("category").exec();
 
-  if(book === null){
-    
+  if (book === null) {
+    const err = new Error("Book not found");
+    err.status = 404;
+    return next(err);
   }
 
   res.render("book_detail", { title: book.name, book: book });

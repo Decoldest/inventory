@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 #{clothing.name}
+  p #{clothing.description}
+
+
+  h4 #[strong Price: ] #{clothing.price} Galleons
+  p #[strong Stock:] #{clothing.stock}
+  p #[strong Category: ]
+      a(href=clothing.category[0].url) #{clothing.category[0].name}
+
+  hr
+  p
+    a(href=clothing.url+'/delete') Delete Book
+  p
+    a(href=clothing.url+'/update') Update Book

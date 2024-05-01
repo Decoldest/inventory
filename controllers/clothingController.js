@@ -13,7 +13,17 @@ exports.clothing_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.clothing_detail = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: clothing details");
+  const clothing = await Clothing.findById(req.params.id)
+    .populate("category")
+    .exec();
+
+  if (clothing === null) {
+    const err = new Error("Clothing not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("clothing_detail", { title: clothing.name, clothing: clothing });
 });
 
 exports.clothing_create_get = asyncHandler(async (req, res, next) => {

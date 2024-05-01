@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 #{potion.name}
+  p #{potion.description}
+
+
+  h4 #[strong Price: ] #{potion.price} Galleons
+  p #[strong Stock:] #{potion.stock}
+  p #[strong Category: ]
+      a(href=potion.category[0].url) #{potion.category[0].name}
+
+  hr
+  p
+    a(href=potion.url+'/delete') Delete Book
+  p
+    a(href=potion.url+'/update') Update Book

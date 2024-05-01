@@ -8,7 +8,15 @@ exports.broom_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.broom_detail = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom details");
+  const broom = await Broom.findById(req.params.id).populate("category").exec();
+
+  if (broom === null) {
+    const err = new Error("Broom not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("broom_detail", { title: broom.name, broom: broom });
 });
 
 exports.broom_create_get = asyncHandler(async (req, res, next) => {

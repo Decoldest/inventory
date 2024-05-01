@@ -13,8 +13,15 @@ exports.creature_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.creature_detail = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: creature details");
-});
+  const creature = await Creature.findById(req.params.id).populate("category").exec();
+
+  if (creature === null) {
+    const err = new Error("Creature not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("creature_detail", { title: creature.name, creature: creature });});
 
 exports.creature_create_get = asyncHandler(async (req, res, next) => {
   res.send("Not Implemented: creature create get");

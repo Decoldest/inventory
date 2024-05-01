@@ -11,7 +11,15 @@ exports.wand_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.wand_detail = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: wand details");
+  const wand = await Wand.findById(req.params.id).populate("category").exec();
+
+  if (wand === null) {
+    const err = new Error("Wand not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("wand_detail", { title: wand.name, wand: wand });
 });
 
 exports.wand_create_get = asyncHandler(async (req, res, next) => {

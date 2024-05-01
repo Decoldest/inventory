@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 #{wand.name}
+  p #{wand.description}
+
+
+  h4 #[strong Price: ] #{wand.price} Galleons
+  p #[strong Stock:] #{wand.stock}
+  p #[strong Category: ]
+      a(href=wand.category[0].url) #{wand.category[0].name}
+
+  hr
+  p
+    a(href=wand.url+'/delete') Delete Book
+  p
+    a(href=wand.url+'/update') Update Book

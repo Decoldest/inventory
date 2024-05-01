@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 #{broom.name}
+  p #{broom.description}
+
+
+  h4 #[strong Price: ] #{broom.price} Galleons
+  p #[strong Stock:] #{broom.stock}
+  p #[strong Category: ]
+      a(href=broom.category[0].url) #{broom.category[0].name}
+
+  hr
+  p
+    a(href=broom.url+'/delete') Delete Book
+  p
+    a(href=broom.url+'/update') Update Book
