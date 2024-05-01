@@ -7,6 +7,9 @@ const creature_controller = require("../controllers/creatureController");
 const potion_controller = require("../controllers/potionController");
 const wand_controller = require("../controllers/wandController");
 
+router.get("/", book_controller.book_create_get);
+
+
 //Create book GET and POST requests
 router.get("/book/create", book_controller.book_create_get);
 router.post("/book/create", book_controller.book_create_post);
@@ -102,3 +105,5 @@ router.post("/wand/:id/update", wand_controller.wand_update_post);
 //GET for single book and all books
 router.get("/wand/:id", wand_controller.wand_detail);
 router.get("/wands", wand_controller.wand_list);
+
+module.exports = router;
