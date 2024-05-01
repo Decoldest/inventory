@@ -10,7 +10,7 @@ const WandSchema = new Schema({
   stock: { type: Number, required: true, min: 0 },
 });
 
-CreatureSchema.virtual("url").get(function () {
+WandSchema.virtual("url").get(function () {
   return `/inventory/wand/${this._id}`;
 });
 
