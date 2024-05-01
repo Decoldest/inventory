@@ -1,8 +1,13 @@
-const Potion = require("../models/category");
+const Potion = require("../models/potion");
 const asyncHandler = require("express-async-handler");
 
 exports.potion_list = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion list");
+  const potions = await Potion.find({}, "name price").sort({ name: 1 }).exec();
+
+  res.render("potion_list", {
+    title: "All Potions",
+    potion_list: potions,
+  });
 });
 
 exports.potion_detail = asyncHandler(async (req, res, next) => {

@@ -2,11 +2,19 @@ const Book = require("../models/book");
 const asyncHandler = require("express-async-handler");
 
 exports.book_list = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: book list");
+  const books = await Book.find({}, "name price").sort({ name: 1 }).exec();
+
+  res.render("book_list", { title: "All Books", book_list: books });
 });
 
 exports.book_detail = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: book details");
+  const book = await Book.findById(req.params.id).populate("genre").exec();
+
+  if(book === null){
+    
+  }
+
+  res.render("book_detail", { title: book.name, book: book });
 });
 
 exports.book_create_get = asyncHandler(async (req, res, next) => {

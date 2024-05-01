@@ -19,6 +19,6 @@ router.get("/category/:id/update", category_controller.category_update_post);
 
 //GET for single category and all categories
 router.get("/category/:id", category_controller.category_detail);
-router.get("/categories", category_controller.category_list);
+// router.get("/categories", category_controller.category_list);
 
 module.exports = router;

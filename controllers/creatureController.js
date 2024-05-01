@@ -1,8 +1,15 @@
-const Creature = require("../models/category");
+const Creature = require("../models/creature");
 const asyncHandler = require("express-async-handler");
 
 exports.creature_list = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: creature list");
+  const creatures = await Creature.find({}, "name price")
+    .sort({ name: 1 })
+    .exec();
+
+  res.render("creature_list", {
+    title: "All Creatures",
+    creature_list: creatures,
+  });
 });
 
 exports.creature_detail = asyncHandler(async (req, res, next) => {

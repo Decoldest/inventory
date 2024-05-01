@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  div
+    if creature_list.length
+      ul
+        each creature in creature_list
+          li
+            a(href=creature.url) #{creature.name} #{creature.price} Galleons
+
+    else
+      p There are no creatures.

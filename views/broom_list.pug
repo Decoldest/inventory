@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  div
+    if broom_list.length
+      ul
+        each broom in broom_list
+          li
+            a(href=broom.url) #{broom.name} #{broom.price} Galleons
+
+    else
+      p There are no brooms.

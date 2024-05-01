@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  div
+    if potion_list.length
+      ul
+        each potion in potion_list
+          li
+            a(href=potion.url) #{potion.name} #{potion.price} Galleons
+
+    else
+      p There are no potions.

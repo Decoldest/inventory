@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  div
+    if wand_list.length
+      ul
+        each wand in wand_list
+          li
+            a(href=wand.url) #{wand.name} #{wand.price} Galleons
+
+    else
+      p There are no wands.

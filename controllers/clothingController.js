@@ -1,8 +1,15 @@
-const Clothing = require("../models/category");
+const Clothing = require("../models/clothing");
 const asyncHandler = require("express-async-handler");
 
 exports.clothing_list = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: clothing list");
+  const clothing = await Clothing.find({}, "name price")
+    .sort({ name: 1 })
+    .exec();
+
+  res.render("clothing_list", {
+    title: "All Clothing",
+    clothing_list: clothing,
+  });
 });
 
 exports.clothing_detail = asyncHandler(async (req, res, next) => {

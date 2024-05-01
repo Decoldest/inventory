@@ -2,7 +2,9 @@ const Broom = require("../models/broom");
 const asyncHandler = require("express-async-handler");
 
 exports.broom_list = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom list");
+  const brooms = await Broom.find({}, "name price").sort({ name: 1 }).exec();
+
+  res.render("broom_list", { title: "All Brooms", broom_list: brooms });
 });
 
 exports.broom_detail = asyncHandler(async (req, res, next) => {

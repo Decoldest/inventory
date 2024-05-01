@@ -2,7 +2,12 @@ const Wand = require("../models/wand");
 const asyncHandler = require("express-async-handler");
 
 exports.wand_list = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: wand list");
+  const wands = await Wand.find({}, "name price").sort({ name: 1 }).exec();
+
+  res.render("wand_list", {
+    title: "All Wands",
+    wand_list: wands,
+  });
 });
 
 exports.wand_detail = asyncHandler(async (req, res, next) => {

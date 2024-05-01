@@ -9,7 +9,6 @@ const wand_controller = require("../controllers/wandController");
 
 router.get("/", book_controller.book_create_get);
 
-
 //Create book GET and POST requests
 router.get("/book/create", book_controller.book_create_get);
 router.post("/book/create", book_controller.book_create_post);
@@ -88,7 +87,7 @@ router.post("/potion/:id/update", potion_controller.potion_update_post);
 
 //GET for single potion and all potions
 router.get("/potion/:id", potion_controller.potion_detail);
-router.get("/potion", potion_controller.potion_list);
+router.get("/potions", potion_controller.potion_list);
 
 //Create wand GET and POST requests
 router.get("/wand/create", wand_controller.wand_create_get);

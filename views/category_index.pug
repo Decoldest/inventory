@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1= title
+
+  div
+    h2 Total Inventory: !{total_inventory}
+
+  div
+    h3 All categories
+    if category_list.length
+      ul
+        each category in category_list
+          li
+            a(href=category.url) #{category.name}s
+
+    else
+      p There are no categories.
