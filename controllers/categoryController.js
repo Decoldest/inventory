@@ -1,6 +1,10 @@
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
 
+exports.index = asyncHandler(async (req, res, next) => {
+  res.send("Not Implemented: Site index");
+});
+
 exports.category_list = asyncHandler(async (req, res, next) => {
   res.send("Not Implemented: category list");
 });
