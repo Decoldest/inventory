@@ -157,7 +157,7 @@ exports.wand_update_post = [
       });
     } else {
       const updatedItem = await Wand.findByIdAndUpdate(req.params.id, wand, {});
-      res.redirect(wand.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];

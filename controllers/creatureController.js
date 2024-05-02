@@ -160,7 +160,7 @@ exports.creature_update_post = [
         creature,
         {},
       );
-      res.redirect(creature.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];

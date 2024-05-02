@@ -149,7 +149,7 @@ exports.broom_update_post = [
       });
     } else {
       const updatedItem = await Broom.findByIdAndUpdate(req.params.id, broom, {});
-      res.redirect(broom.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];

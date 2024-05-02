@@ -33,7 +33,6 @@ exports.clothing_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.clothing_create_post = [
-
   body("name", "Name must be between 2 - 100 characters")
     .trim()
     .isLength({ min: 2, max: 100 })
@@ -161,7 +160,7 @@ exports.clothing_update_post = [
         clothing,
         {},
       );
-      res.redirect(clothing.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];

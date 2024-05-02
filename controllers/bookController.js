@@ -148,7 +148,7 @@ exports.book_update_post = [
       });
     } else {
       const updatedItem = await Book.findByIdAndUpdate(req.params.id, book, {});
-      res.redirect(book.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];

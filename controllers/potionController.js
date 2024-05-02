@@ -163,7 +163,7 @@ exports.potion_update_post = [
         potion,
         {},
       );
-      res.redirect(potion.url);
+      res.redirect(updatedItem.url);
     }
   }),
 ];
