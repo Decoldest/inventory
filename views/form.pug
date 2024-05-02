@@ -6,7 +6,7 @@ block content
   form(method='POST')
     div.form-group
       label(for='name') Name:
-      textarea#name.form-control(placeholder='Name' name='name' required)= undefined===book ? '' : book.summary
+      textarea#name.form-control(placeholder='Name' name='name' required)= undefined===book ? '' : book.name
     div.form-group
       label(for='description') Description:
       textarea#description.form-control(placeholder='Description' name='description')= undefined===book ? '' : book.description

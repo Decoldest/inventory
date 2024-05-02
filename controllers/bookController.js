@@ -57,9 +57,7 @@ exports.book_create_post = [
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-    console.log(errors);
     const category = await Category.find({ name: "Book" });
-    console.log("category: " + category);
     const book = new Book({
       name: req.body.name,
       description: req.body.description,
@@ -98,7 +96,13 @@ exports.book_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.book_update_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: book update get");
+  const book = await Book.findById(req.params.id).exec();
+
+  if (book === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("form", { title: "Update Book", book: book });
 });
 
 exports.book_update_post = asyncHandler(async (req, res, next) => {
