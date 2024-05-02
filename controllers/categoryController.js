@@ -10,12 +10,12 @@ const { body, validationResult } = require("express-validator");
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [
-    bookCount,
-    broomCount,
-    clothingCount,
-    creatureCount,
-    potionCount,
-    wandCount,
+    bookInventory,
+    broomInventory,
+    clothingInventory,
+    creatureInventory,
+    potionInventory,
+    wandInventory,
   ] = await Promise.all([
     Book.countDocuments({}).exec(),
     Broom.countDocuments({}).exec(),
@@ -26,18 +26,52 @@ exports.index = asyncHandler(async (req, res, next) => {
   ]);
 
   const total_inventory =
-    bookCount +
-    broomCount +
-    clothingCount +
-    creatureCount +
-    potionCount +
-    wandCount;
+    bookInventory +
+    broomInventory +
+    clothingInventory +
+    creatureInventory +
+    potionInventory +
+    wandInventory;
+
+  const [
+    bookStock,
+    broomStock,
+    clothingStock,
+    creatureStock,
+    potionStock,
+    wandStock,
+  ] = await Promise.all([
+    Book.find({}).select("stock").exec(),
+    Broom.find({}).select("stock").exec(),
+    Clothing.find({}).select("stock").exec(),
+    Creature.find({}).select("stock").exec(),
+    Potion.find({}).select("stock").exec(),
+    Wand.find({}).select("stock").exec(),
+  ]);
+
+  // Function to calculate total stock for a category
+  const calculateTotalStock = (inventory, stockList) => {
+    return (
+      stockList.reduce((total, item) => {
+        return total + item.stock;
+      }, 0) * inventory
+    );
+  };
+
+  const totalStock =
+    calculateTotalStock(bookInventory, bookStock) +
+    calculateTotalStock(broomInventory, broomStock) +
+    calculateTotalStock(clothingInventory, clothingStock) +
+    calculateTotalStock(creatureInventory, creatureStock) +
+    calculateTotalStock(potionInventory, potionStock) +
+    calculateTotalStock(wandInventory, wandStock);
 
   const allCategories = await Category.find().sort({ name: 1 }).exec();
 
   res.render("category_index", {
     title: "Welcome to The Shop",
     total_inventory: total_inventory,
+    total_stock: totalStock,
     category_list: allCategories,
   });
 });

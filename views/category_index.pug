@@ -4,10 +4,12 @@ block content
   h1= title
 
   div
-    h2 Total Inventory: !{total_inventory}
+    h3 Total Inventory: !{total_inventory}
+    h3 Total Stock: !{total_stock}
+
 
   div
-    h3 All categories
+    h5 All categories
     if category_list.length
       ul
         each category in category_list
