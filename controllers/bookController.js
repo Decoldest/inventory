@@ -30,10 +30,13 @@ exports.book_create_post = [
     next();
   },
 
-  body("name", "Name must not be empty").trim().isLength({ min: 1 }).escape(),
-  body("description", "Description must not be empty")
+  body("name", "Name must be between 2 - 100 characters")
     .trim()
-    .isLength({ min: 1 })
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
     .escape(),
   body("price")
     .trim()
@@ -54,6 +57,7 @@ exports.book_create_post = [
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
+    console.log(errors);
     const category = await Category.find({ name: "Book" });
     console.log("category: " + category);
     const book = new Book({

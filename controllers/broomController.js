@@ -30,10 +30,13 @@ exports.broom_create_post = [
     next();
   },
 
-  body("name", "Name must not be empty").trim().isLength({ min: 1 }).escape(),
-  body("description", "Description must not be empty")
+  body("name", "Name must be between 2 - 100 characters")
     .trim()
-    .isLength({ min: 1 })
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
     .escape(),
   body("price")
     .trim()
@@ -66,6 +69,7 @@ exports.broom_create_post = [
 
     if (!errors.isEmpty()) {
       res.render("form", {
+        title: "Create New Broom",
         broom: broom,
         errors: errors.array(),
       });

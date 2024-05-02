@@ -1,5 +1,7 @@
 const Potion = require("../models/potion");
+const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 exports.potion_list = asyncHandler(async (req, res, next) => {
   const potions = await Potion.find({}, "name price").sort({ name: 1 }).exec();
@@ -25,12 +27,65 @@ exports.potion_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.potion_create_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion create get");
+  res.render("form", { title: "Create New Potion" });
 });
 
-exports.potion_create_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion create post");
-});
+exports.potion_create_post = [
+  (req, res, next) => {
+    next();
+  },
+
+  body("name", "Name must be between 2 - 100 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    console.log(errors);
+    const category = await Category.find({ name: "Potion" });
+    console.log("category: " + category);
+    const potion = new Potion({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        title: "Create New Potion",
+        potion: potion,
+        errors: errors.array(),
+      });
+    } else {
+      await potion.save();
+      console.log("saved");
+      res.redirect(potion.url);
+    }
+  }),
+];
 
 exports.potion_delete_get = asyncHandler(async (req, res, next) => {
   res.send("Not Implemented: potion delete get");
