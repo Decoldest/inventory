@@ -12,7 +12,12 @@ block content
       ul
         each category in category_list
           li
-            a(href=category.url) #{category.name}s
+            - const link = category.name === "Clothing" ? `inventory/clothing` : `inventory/${category.name}s`
+            a(href=link) #{category.name}#{category.name === 'Clothing' ? '' : 's'}
 
     else
       p There are no categories.
+  
+  hr
+  p 
+    a(href="category/create") Create New Category
