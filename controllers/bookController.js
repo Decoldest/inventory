@@ -22,26 +22,26 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.book_create_get = asyncHandler(async (req, res, next) => {
-  res.render("book_form", { title: "Create New Book" });
+  res.render("form", { title: "Create New Book" });
 });
 
-exports.book_create_post = asyncHandler(async (req, res, next) => [
+exports.book_create_post = [
   (req, res, next) => {
     next();
   },
 
-  body("name", "Name must not be empty").trim().isLength({ min: 1 }).escape();
+  body("name", "Name must not be empty").trim().isLength({ min: 1 }).escape(),
   body("description", "Description must not be empty")
     .trim()
     .isLength({ min: 1 })
-    .escape();
+    .escape(),
   body("price")
     .trim()
     .isLength({ min: 1 })
     .withMessage("Price must not be empty")
     .isNumeric()
     .withMessage("Price must be a number")
-    .escape();
+    .escape(),
   body("stock")
     .trim()
     .isLength({ min: 1 })
@@ -65,7 +65,8 @@ exports.book_create_post = asyncHandler(async (req, res, next) => [
     });
 
     if (!errors.isEmpty()) {
-      res.render("book_form", {
+      res.render("form", {
+        title: "Create New Book",
         book: book,
         errors: errors.array(),
       });

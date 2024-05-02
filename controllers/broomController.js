@@ -1,5 +1,7 @@
 const Broom = require("../models/broom");
+const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 exports.broom_list = asyncHandler(async (req, res, next) => {
   const brooms = await Broom.find({}, "name price").sort({ name: 1 }).exec();
@@ -20,12 +22,60 @@ exports.broom_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.broom_create_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom create get");
+  res.render("form", { title: "Create New Broom" });
 });
 
-exports.broom_create_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom create post");
-});
+exports.broom_create_post = [
+  (req, res, next) => {
+    next();
+  },
+
+  body("name", "Name must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("description", "Description must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const category = await Category.find({ name: "Broom" });
+    console.log("category: " + category);
+    const broom = new Broom({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        broom: broom,
+        errors: errors.array(),
+      });
+    } else {
+      await broom.save();
+      console.log("saved");
+      res.redirect(broom.url);
+    }
+  }),
+];
 
 exports.broom_delete_get = asyncHandler(async (req, res, next) => {
   res.send("Not Implemented: broom delete get");
