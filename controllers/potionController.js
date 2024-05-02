@@ -103,9 +103,67 @@ exports.potion_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.potion_update_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion update get");
+  const potion = await Potion.findById(req.params.id).exec();
+
+  if (potion === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("form", { title: "Update Potion", item: potion });
 });
 
-exports.potion_update_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion update post");
-});
+exports.potion_update_post = [
+  body("name", "Name must be between 2 - 100 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const category = await Category.find({ name: "Potion" });
+
+    const potion = new Potion({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        title: "Update Potion",
+        item: potion,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedItem = await Potion.findByIdAndUpdate(
+        req.params.id,
+        potion,
+        {},
+      );
+      res.redirect(potion.url);
+    }
+  }),
+];

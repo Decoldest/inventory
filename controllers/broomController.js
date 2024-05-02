@@ -26,10 +26,6 @@ exports.broom_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.broom_create_post = [
-  (req, res, next) => {
-    next();
-  },
-
   body("name", "Name must be between 2 - 100 characters")
     .trim()
     .isLength({ min: 2, max: 100 })
@@ -97,9 +93,63 @@ exports.broom_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.broom_update_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom update get");
+  const broom = await Broom.findById(req.params.id).exec();
+
+  if (broom === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("form", { title: "Update Broom", item: broom });
 });
 
-exports.broom_update_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom update post");
-});
+exports.broom_update_post = [
+  body("name", "Name must be between 2 - 100 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const category = await Category.find({ name: "Broom" });
+
+    const broom = new Broom({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        title: "Update Broom",
+        item: broom,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedItem = await Broom.findByIdAndUpdate(req.params.id, broom, {});
+      res.redirect(broom.url);
+    }
+  }),
+];

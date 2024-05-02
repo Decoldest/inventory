@@ -102,9 +102,62 @@ exports.wand_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.wand_update_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: wand update get");
+  const wand = await Wand.findById(req.params.id).exec();
+
+  if (wand === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("form", { title: "Update Wand", item: wand });
 });
 
-exports.wand_update_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: wand update post");
-});
+exports.wand_update_post = [
+  body("name", "Name must be between 2 - 100 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 }),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const category = await Category.find({ name: "Wand" });
+
+    const wand = new Wand({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        title: "Update Wand",
+        item: wand,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedItem = await Wand.findByIdAndUpdate(req.params.id, wand, {});
+      res.redirect(wand.url);
+    }
+  }),
+];

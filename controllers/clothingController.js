@@ -33,9 +33,6 @@ exports.clothing_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.clothing_create_post = [
-  (req, res, next) => {
-    next();
-  },
 
   body("name", "Name must be between 2 - 100 characters")
     .trim()
@@ -104,9 +101,67 @@ exports.clothing_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.clothing_update_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: clothing update get");
+  const clothing = await Clothing.findById(req.params.id).exec();
+
+  if (clothing === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("form", { title: "Update Clothing", item: clothing });
 });
 
-exports.clothing_update_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: clothing update post");
-});
+exports.clothing_update_post = [
+  body("name", "Name must be between 2 - 100 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const category = await Category.find({ name: "Clothing" });
+
+    const clothing = new Clothing({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        title: "Update Clothing",
+        item: clothing,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedItem = await Clothing.findByIdAndUpdate(
+        req.params.id,
+        clothing,
+        {},
+      );
+      res.redirect(clothing.url);
+    }
+  }),
+];

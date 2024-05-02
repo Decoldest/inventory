@@ -33,10 +33,6 @@ exports.creature_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.creature_create_post = [
-  (req, res, next) => {
-    next();
-  },
-
   body("name", "Name must be between 2 - 100 characters")
     .trim()
     .isLength({ min: 2, max: 100 })
@@ -104,9 +100,67 @@ exports.creature_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.creature_update_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: creature update get");
+  const creature = await Creature.findById(req.params.id).exec();
+
+  if (creature === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("form", { title: "Update Creature", item: creature });
 });
 
-exports.creature_update_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: creature update post");
-});
+exports.creature_update_post = [
+  body("name", "Name must be between 2 - 100 characters")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .escape(),
+  body("description", "Description must be between 2 - 200 characters")
+    .trim()
+    .isLength({ min: 2, max: 200 })
+    .escape(),
+  body("price")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be a number")
+    .escape(),
+  body("stock")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Stock must not be empty")
+    .isNumeric()
+    .withMessage("Stock must be a number")
+    .isInt()
+    .withMessage("Stock must be an integer")
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const category = await Category.find({ name: "Creature" });
+
+    const creature = new Creature({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      category: category,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("form", {
+        title: "Update Creature",
+        item: creature,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedItem = await Creature.findByIdAndUpdate(
+        req.params.id,
+        creature,
+        {},
+      );
+      res.redirect(creature.url);
+    }
+  }),
+];
