@@ -8,12 +8,12 @@ block content
   h4 #[strong Price: ] #{potion.price} Galleons
   p #[strong Stock:] #{potion.stock}
   p #[strong Category: ]
-      a(href=potion.category[0].url) #{potion.category[0].name}
+      a(href='/inventory/potions') Potion
 
   hr
   p
     a(href=potion.url+'/create') Create New Potion
   p
-    a(href=potion.url+'/delete') Delete Book
+    a(href=potion.url+'/delete') Delete Potion
   p
-    a(href=potion.url+'/update') Update Book
+    a(href=potion.url+'/update') Update Potion

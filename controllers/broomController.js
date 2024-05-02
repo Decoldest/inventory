@@ -82,11 +82,18 @@ exports.broom_create_post = [
 ];
 
 exports.broom_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom delete get");
+  const broom = await Broom.findById(req.params.id).exec();
+
+  if (broom === null) {
+    res.redirect("/inventory/broom");
+  }
+
+  res.render("delete", { title: "Delete Broom", item: broom });
 });
 
 exports.broom_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: broom delete post");
+  await Broom.findByIdAndDelete(req.body.itemid);
+  res.redirect("/inventory/brooms");
 });
 
 exports.broom_update_get = asyncHandler(async (req, res, next) => {

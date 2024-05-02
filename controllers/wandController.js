@@ -2,7 +2,7 @@ const Wand = require("../models/wand");
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
-
+const wand = require("../models/wand");
 
 exports.wand_list = asyncHandler(async (req, res, next) => {
   const wands = await Wand.find({}, "name price").sort({ name: 1 }).exec();
@@ -87,11 +87,18 @@ exports.wand_create_post = [
 ];
 
 exports.wand_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: wand delete get");
+  const wand = await Wand.findById(req.params.id).exec();
+
+  if (wand === null) {
+    res.redirect("/inventory/wand");
+  }
+
+  res.render("delete", { title: "Delete Wand", item: wand });
 });
 
 exports.wand_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: wand delete post");
+  await Wand.findByIdAndDelete(req.body.itemid);
+  res.redirect("/inventory/wands");
 });
 
 exports.wand_update_get = asyncHandler(async (req, res, next) => {

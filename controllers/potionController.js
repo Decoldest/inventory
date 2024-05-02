@@ -88,11 +88,18 @@ exports.potion_create_post = [
 ];
 
 exports.potion_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion delete get");
+  const potion = await Potion.findById(req.params.id).exec();
+
+  if (potion === null) {
+    res.redirect("/inventory/potion");
+  }
+
+  res.render("delete", { title: "Delete Potion", item: potion });
 });
 
 exports.potion_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: potion delete post");
+  await Potion.findByIdAndDelete(req.body.itemid);
+  res.redirect("/inventory/potions");
 });
 
 exports.potion_update_get = asyncHandler(async (req, res, next) => {

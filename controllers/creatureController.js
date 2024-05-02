@@ -89,11 +89,18 @@ exports.creature_create_post = [
 ];
 
 exports.creature_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: creature delete get");
+  const creature = await Creature.findById(req.params.id).exec();
+
+  if (creature === null) {
+    res.redirect("/inventory/creature");
+  }
+
+  res.render("delete", { title: "Delete Creature", item: creature });
 });
 
 exports.creature_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: creature delete post");
+  await Creature.findByIdAndDelete(req.body.itemid);
+  res.redirect("/inventory/creatures");
 });
 
 exports.creature_update_get = asyncHandler(async (req, res, next) => {

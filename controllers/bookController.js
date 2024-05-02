@@ -83,11 +83,18 @@ exports.book_create_post = [
 ];
 
 exports.book_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: book delete get");
+  const book = await Book.findById(req.params.id).exec();
+
+  if (book === null) {
+    res.redirect("/inventory/books");
+  }
+
+  res.render("delete", { title: "Delete Book", item: book });
 });
 
 exports.book_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: book delete post");
+  await Book.findByIdAndDelete(req.body.itemid);
+  res.redirect("/inventory/books");
 });
 
 exports.book_update_get = asyncHandler(async (req, res, next) => {

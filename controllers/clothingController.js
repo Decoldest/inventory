@@ -76,7 +76,7 @@ exports.clothing_create_post = [
 
     if (!errors.isEmpty()) {
       res.render("form", {
-        title: "Create New Broom",
+        title: "Create New Clothing",
         clothing: clothing,
         errors: errors.array(),
       });
@@ -89,11 +89,18 @@ exports.clothing_create_post = [
 ];
 
 exports.clothing_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: clothing delete get");
+  const clothing = await Clothing.findById(req.params.id).exec();
+
+  if (clothing === null) {
+    res.redirect("/inventory/clothing");
+  }
+
+  res.render("delete", { title: "Delete Clothing", item: clothing });
 });
 
 exports.clothing_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("Not Implemented: clothing delete post");
+  await Clothing.findByIdAndDelete(req.body.itemid);
+  res.redirect("/inventory/clothing");
 });
 
 exports.clothing_update_get = asyncHandler(async (req, res, next) => {
