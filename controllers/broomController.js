@@ -87,10 +87,30 @@ exports.broom_delete_get = asyncHandler(async (req, res, next) => {
   res.render("delete", { title: "Delete Broom", item: broom });
 });
 
-exports.broom_delete_post = asyncHandler(async (req, res, next) => {
-  await Broom.findByIdAndDelete(req.body.itemid);
-  res.redirect("/inventory/brooms");
-});
+exports.broom_delete_post = [
+  body("password", "Password incorrect").equals("secret_password"),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const broom = await Broom.findById(req.params.id).exec();
+
+    if (broom === null) {
+      res.redirect("/inventory/books");
+    }
+    if (!errors.isEmpty()) {
+      res.render("delete", {
+        title: "Delete Broom",
+        item: broom,
+        errors: errors.array(),
+        password: true,
+      });
+    } else {
+      await Broom.deleteOne(broom);
+      res.redirect("/inventory/brooms");
+    }
+  }),
+];
 
 exports.broom_update_get = asyncHandler(async (req, res, next) => {
   const broom = await Broom.findById(req.params.id).exec();
@@ -127,6 +147,7 @@ exports.broom_update_post = [
     .isInt()
     .withMessage("Stock must be an integer")
     .escape(),
+  body("password", "Password incorrect").equals("secret_password"),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -148,7 +169,11 @@ exports.broom_update_post = [
         errors: errors.array(),
       });
     } else {
-      const updatedItem = await Broom.findByIdAndUpdate(req.params.id, broom, {});
+      const updatedItem = await Broom.findByIdAndUpdate(
+        req.params.id,
+        broom,
+        {},
+      );
       res.redirect(updatedItem.url);
     }
   }),

@@ -94,10 +94,30 @@ exports.clothing_delete_get = asyncHandler(async (req, res, next) => {
   res.render("delete", { title: "Delete Clothing", item: clothing });
 });
 
-exports.clothing_delete_post = asyncHandler(async (req, res, next) => {
-  await Clothing.findByIdAndDelete(req.body.itemid);
-  res.redirect("/inventory/clothing");
-});
+exports.clothing_delete_post = [
+  body("password", "Password incorrect").equals("secret_password"),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const clothing = await Clothing.findById(req.params.id).exec();
+
+    if (clothing === null) {
+      res.redirect("/inventory/books");
+    }
+    if (!errors.isEmpty()) {
+      res.render("delete", {
+        title: "Delete Clothing",
+        item: clothing,
+        errors: errors.array(),
+        password: true,
+      });
+    } else {
+      await Clothing.deleteOne(clothing);
+      res.redirect("/inventory/clothing");
+    }
+  }),
+];
 
 exports.clothing_update_get = asyncHandler(async (req, res, next) => {
   const clothing = await Clothing.findById(req.params.id).exec();
@@ -134,6 +154,7 @@ exports.clothing_update_post = [
     .isInt()
     .withMessage("Stock must be an integer")
     .escape(),
+  body("password", "Password incorrect").equals("secret_password"),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);

@@ -16,6 +16,11 @@ block content
     div.form-group
       label(for='stock') Price:
       input#stock.form-control(placeholder='Stock' name='stock' type='number' required value= (undefined===item ? '' : item.stock))
+    div.form-group
+      if password
+        label(for='password') Password:
+        input#password.form-control(type='password', name='password')
+
     button.btn.btn-primary(type='submit') Submit
 
   if errors

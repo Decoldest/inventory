@@ -7,6 +7,7 @@ const Potion = require("../models/potion");
 const Wand = require("../models/wand");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const category = require("../models/category");
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [
@@ -57,6 +58,7 @@ exports.index = asyncHandler(async (req, res, next) => {
       }, 0) * inventory
     );
   };
+  const allCategories = await Category.find().sort({ name: 1 }).exec();
 
   const totalStock =
     calculateTotalStock(bookInventory, bookStock) +
@@ -65,8 +67,6 @@ exports.index = asyncHandler(async (req, res, next) => {
     calculateTotalStock(creatureInventory, creatureStock) +
     calculateTotalStock(potionInventory, potionStock) +
     calculateTotalStock(wandInventory, wandStock);
-
-  const allCategories = await Category.find().sort({ name: 1 }).exec();
 
   res.render("category_index", {
     title: "Welcome to The Shop",

@@ -94,10 +94,30 @@ exports.creature_delete_get = asyncHandler(async (req, res, next) => {
   res.render("delete", { title: "Delete Creature", item: creature });
 });
 
-exports.creature_delete_post = asyncHandler(async (req, res, next) => {
-  await Creature.findByIdAndDelete(req.body.itemid);
-  res.redirect("/inventory/creatures");
-});
+exports.creature_delete_post = [
+  body("password", "Password incorrect").equals("secret_password"),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const creature = await Creature.findById(req.params.id).exec();
+
+    if (creature === null) {
+      res.redirect("/inventory/books");
+    }
+    if (!errors.isEmpty()) {
+      res.render("delete", {
+        title: "Delete Creature",
+        item: creature,
+        errors: errors.array(),
+        password: true,
+      });
+    } else {
+      await Creature.deleteOne(creature);
+      res.redirect("/inventory/creatures");
+    }
+  }),
+];
 
 exports.creature_update_get = asyncHandler(async (req, res, next) => {
   const creature = await Creature.findById(req.params.id).exec();
@@ -134,6 +154,7 @@ exports.creature_update_post = [
     .isInt()
     .withMessage("Stock must be an integer")
     .escape(),
+  body("password", "Password incorrect").equals("secret_password"),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);

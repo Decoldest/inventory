@@ -6,7 +6,10 @@ var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-const inventoryRouter = require("./routes/inventory")
+const inventoryRouter = require("./routes/inventory");
+const compression = require("compression");
+const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
 
 var app = express();
 app.set("trust proxy", 1);
@@ -31,6 +34,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(compression());
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+app.use(limiter);
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
+    },
+  }),
+);
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);

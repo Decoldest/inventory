@@ -96,10 +96,30 @@ exports.wand_delete_get = asyncHandler(async (req, res, next) => {
   res.render("delete", { title: "Delete Wand", item: wand });
 });
 
-exports.wand_delete_post = asyncHandler(async (req, res, next) => {
-  await Wand.findByIdAndDelete(req.body.itemid);
-  res.redirect("/inventory/wands");
-});
+exports.wand_delete_post = [
+  body("password", "Password incorrect").equals("secret_password"),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const wand = await Wand.findById(req.params.id).exec();
+
+    if (wand === null) {
+      res.redirect("/inventory/books");
+    }
+    if (!errors.isEmpty()) {
+      res.render("delete", {
+        title: "Delete Wand",
+        item: wand,
+        errors: errors.array(),
+        password: true,
+      });
+    } else {
+      await Wand.deleteOne(wand);
+      res.redirect("/inventory/wands");
+    }
+  }),
+];
 
 exports.wand_update_get = asyncHandler(async (req, res, next) => {
   const wand = await Wand.findById(req.params.id).exec();
@@ -135,6 +155,7 @@ exports.wand_update_post = [
     .isInt()
     .withMessage("Stock must be an integer")
     .escape(),
+  body("password", "Password incorrect").equals("secret_password"),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);

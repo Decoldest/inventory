@@ -97,10 +97,30 @@ exports.potion_delete_get = asyncHandler(async (req, res, next) => {
   res.render("delete", { title: "Delete Potion", item: potion });
 });
 
-exports.potion_delete_post = asyncHandler(async (req, res, next) => {
-  await Potion.findByIdAndDelete(req.body.itemid);
-  res.redirect("/inventory/potions");
-});
+exports.potion_delete_post = [
+  body("password", "Password incorrect").equals("secret_password"),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const potion = await Potion.findById(req.params.id).exec();
+
+    if (potion === null) {
+      res.redirect("/inventory/books");
+    }
+    if (!errors.isEmpty()) {
+      res.render("delete", {
+        title: "Delete Potion",
+        item: potion,
+        errors: errors.array(),
+        password: true,
+      });
+    } else {
+      await Potion.deleteOne(potion);
+      res.redirect("/inventory/potions");
+    }
+  }),
+];
 
 exports.potion_update_get = asyncHandler(async (req, res, next) => {
   const potion = await Potion.findById(req.params.id).exec();
@@ -137,6 +157,7 @@ exports.potion_update_post = [
     .isInt()
     .withMessage("Stock must be an integer")
     .escape(),
+  body("password", "Password incorrect").equals("secret_password"),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);

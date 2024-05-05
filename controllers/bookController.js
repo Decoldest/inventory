@@ -83,13 +83,33 @@ exports.book_delete_get = asyncHandler(async (req, res, next) => {
     res.redirect("/inventory/books");
   }
 
-  res.render("delete", { title: "Delete Book", item: book });
+  res.render("delete", { title: "Delete Book", item: book, password: true });
 });
 
-exports.book_delete_post = asyncHandler(async (req, res, next) => {
-  await Book.findByIdAndDelete(req.body.itemid);
-  res.redirect("/inventory/books");
-});
+exports.book_delete_post = [
+  body("password", "Password incorrect").equals("secret_password"),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const book = await Book.findById(req.params.id).exec();
+
+    if (book === null) {
+      res.redirect("/inventory/books");
+    }
+    if (!errors.isEmpty()) {
+      res.render("delete", {
+        title: "Delete Book",
+        item: book,
+        errors: errors.array(),
+        password: true,
+      });
+    } else {
+      await Book.deleteOne(book);
+      res.redirect("/inventory/books");
+    }
+  }),
+];
 
 exports.book_update_get = asyncHandler(async (req, res, next) => {
   const book = await Book.findById(req.params.id).exec();
@@ -98,7 +118,7 @@ exports.book_update_get = asyncHandler(async (req, res, next) => {
     res.redirect("/inventory/books");
   }
 
-  res.render("form", { title: "Update Book", item: book });
+  res.render("form", { title: "Update Book", item: book, password: true });
 });
 
 exports.book_update_post = [
@@ -126,6 +146,7 @@ exports.book_update_post = [
     .isInt()
     .withMessage("Stock must be an integer")
     .escape(),
+  body("password", "Password incorrect").equals("secret_password"),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -145,6 +166,7 @@ exports.book_update_post = [
         title: "Update Book",
         item: book,
         errors: errors.array(),
+        password: true,
       });
     } else {
       const updatedItem = await Book.findByIdAndUpdate(req.params.id, book, {});
